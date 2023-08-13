@@ -1,28 +1,29 @@
-const cityName = document.getElementById('city-name');
-const wind = document.getElementById('temperture')
-const btn = document.getElementById('getWeather')
-
-const inputData = document.getElementById("input-data")
-
-
-btn.addEventListener('click', () =>{
-    const area = inputData.value
-    console.log(area, 'fire area here');
-    if(area) {
-    getWeather(area);
-    }
-});
-
-
-async function getWeather(area){
+let input = document.getElementById('weather')
+let town = document.getElementById('name')
+let temp = document.getElementById('temp')
+let description = document.getElementById('description')
+let btn = document.getElementById('getweather')
+let weatherCont = document.getElementById('container')
+btn.addEventListener('click',getweather)
+async function getweather(){
     try{
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${area}&APPID=58f8064cf0a56d8d19adc5000ee15e44`)
-        let data = await  response.json();
-        console.log(data.name)
-        
-            wind.textContent = `${data.name}`
+        const city = input.value
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=58f8064cf0a56d8d19adc5000ee15e44`
+        const response = await fetch(url)
+        const data = await response.json();
+        if(response.ok){
+            let iconData = data.weather[0].icon
+            let icons = document.getElementById('icons')
+            icons.src = `http://openweathermap.org/img/wn/${iconData}.png`
+            town.innerText = data.name
+            temp.innerText = Math.round(data.main.temp -273.15) + ' degrees'
+            description.innerText = data.weather[0].description
+        }else{
+            alert('Wrong location')
+            weatherCont.innerHTML = `<p>Error</p>`
+        }
     }
-    catch{
-        console.log('error');
+    catch(error){
+        weatherCont.innerHTML = `<p>Error: ${error}`
     }
 }
